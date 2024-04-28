@@ -1,6 +1,7 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
-
+	// https://github.com/hyperaudio/hyperaudio-lite
+	// https://hyperaudio.github.io/hyperaudio-lite-editor/
 	let scriptLoaded = false;
 
 	onMount(() => {
