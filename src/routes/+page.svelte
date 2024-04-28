@@ -1,38 +1,35 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
+
+	let scriptLoaded = false;
 
 	onMount(() => {
-		// Create a new script element
 		const script = document.createElement('script');
 		script.src = 'transcription.js';
 		script.async = true;
-
-		// Append the script to the head to start loading
+		script.onload = () => {
+			scriptLoaded = true;
+		};
+		script.onerror = () => {
+			console.error('Failed to load the transcription script');
+		};
 		document.head.appendChild(script);
 
-		// Function to initialize the transcription player
-		function initializePlayer() {
-			new TranscriptionPlayer({
-				target: document.body,
-				props: {
-					audio: 'demo.mp3',
-					transcription: 'demo.json',
-					playerHeight: 'small'
-				}
-			});
-		}
-
-		// Set up the onload handler
-		script.onload = () => {
-			console.log('transcription.js loaded');
-			initializePlayer();
-		};
-
-		// Optional: handle loading errors
-		script.onerror = () => {
-			console.error('Failed to load transcription.js');
-		};
+		// Cleanup function
+		onDestroy(() => {
+			script.remove();
+		});
 	});
-</script>
 
-<!-- Your Svelte component's HTML here -->
+	// Reactive statement to initialize the player only when the script is loaded
+	$: if (scriptLoaded) {
+		new TranscriptionPlayer({
+			target: document.body,
+			props: {
+				audio: 'demo.mp3',
+				transcription: 'demo.json',
+				playerHeight: 'small'
+			}
+		});
+	}
+</script>
